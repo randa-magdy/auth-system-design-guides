@@ -8,7 +8,7 @@
 5. [JWT Claims Explained](#jwt-claims-explained)
 6. [JWT Signature & Security](#jwt-signature--security)
 7. [JWTs in Distributed Systems](#jwts-in-distributed-systems)
-8. [Implementation Example](#implementation-example)
+8. [Implementation Example (Node.js)](#implementation-example)
 9. [Best Practices & Security Considerations](#best-practices--security-considerations)
 10. [Common Use Cases](#common-use-cases)
 
@@ -306,8 +306,6 @@ function jwtRequired(req, res, next) {
 module.exports = jwtRequired;
 ```
 
----
-
 ### `server.js` – Example usage with Express
 
 ```javascript
@@ -339,8 +337,6 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 ```
-
----
 
 ### 🔑 Usage
 
