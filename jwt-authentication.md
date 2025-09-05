@@ -225,87 +225,142 @@ User → Service C (verify JWT locally)
 }
 ```
 
-## Implementation Example
+## Implementation Example (Node.js)
 
 Here's a practical implementation of JWT generation and verification:
 
-### JWT Generation (Python):
-```python
-import jwt
-import datetime
-from cryptography.hazmat.primitives import serialization
+### `jwt.js` – Utility for generating & verifying JWTs
 
-def generate_jwt(user_id, role, secret_key):
-    # Define header
-    header = {
-        "alg": "HS256",
-        "typ": "JWT"
+```javascript
+const jwt = require("jsonwebtoken");
+
+// Example permissions resolver
+function getUserPermissions(role) {
+  if (role === "admin") return ["read", "write", "delete"];
+  if (role === "user") return ["read"];
+  return [];
+}
+
+function generateJWT(userId, role, secretKey) {
+  const payload = {
+    iss: "myapp.com",            // Issuer
+    sub: String(userId),         // Subject (user ID)
+    aud: "api/myapi",            // Audience
+    role: role,                  // Custom claim
+    permissions: getUserPermissions(role), // Custom claim
+  };
+
+  const options = {
+    algorithm: "HS256",
+    expiresIn: "24h",            // Expiration
+  };
+
+  return jwt.sign(payload, secretKey, options);
+}
+
+function verifyJWT(token, secretKey) {
+  try {
+    const decoded = jwt.verify(token, secretKey, { audience: "api/myapi" });
+    return decoded;
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      throw new Error("Token has expired");
     }
-    
-    # Define payload with registered and custom claims
-    payload = {
-        "iss": "myapp.com",                    # Issuer
-        "sub": str(user_id),                   # Subject (user ID)
-        "aud": "api/myapi",                    # Audience
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),  # Expires in 24 hours
-        "iat": datetime.datetime.utcnow(),     # Issued at
-        "role": role,                          # Custom claim
-        "permissions": get_user_permissions(role)  # Custom claim
-    }
-    
-    # Generate JWT
-    token = jwt.encode(payload, secret_key, algorithm="HS256", headers=header)
-    return token
+    throw new Error("Invalid token");
+  }
+}
 
-def verify_jwt(token, secret_key):
-    try:
-        # Decode and verify JWT
-        decoded = jwt.decode(token, secret_key, algorithms=["HS256"], audience="api/myapi")
-        return decoded
-    except jwt.ExpiredSignatureError:
-        raise Exception("Token has expired")
-    except jwt.InvalidTokenError:
-        raise Exception("Invalid token")
-
-# Usage
-secret = "your-secret-key"
-token = generate_jwt(user_id=123, role="admin", secret_key=secret)
-user_data = verify_jwt(token, secret)
+module.exports = { generateJWT, verifyJWT };
 ```
 
-### JWT Verification in API Middleware:
-```python
-from functools import wraps
-from flask import request, jsonify
+---
 
-def jwt_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-            
-        try:
-            # Remove 'Bearer ' prefix
-            token = token.split(' ')[1]
-            data = verify_jwt(token, secret_key)
-            current_user = data
-        except Exception as e:
-            return jsonify({'message': str(e)}), 401
-            
-        return f(current_user, *args, **kwargs)
-    return decorated
+### `authMiddleware.js` – Express middleware for protecting routes
 
-@app.route('/api/protected')
-@jwt_required
-def protected_route(current_user):
-    return jsonify({
-        'user_id': current_user['sub'],
-        'role': current_user['role'],
-        'message': 'This is a protected endpoint'
-    })
+```javascript
+const { verifyJWT } = require("./jwt");
+
+const secretKey = "your-secret-key"; // Move this to .env in production
+
+function jwtRequired(req, res, next) {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Token is missing!" });
+  }
+
+  const token = authHeader.split(" ")[1]; // Remove 'Bearer '
+  if (!token) {
+    return res.status(401).json({ message: "Invalid Authorization header format" });
+  }
+
+  try {
+    const decoded = verifyJWT(token, secretKey);
+    req.user = decoded; // attach user to request
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: err.message });
+  }
+}
+
+module.exports = jwtRequired;
 ```
+
+---
+
+### `server.js` – Example usage with Express
+
+```javascript
+const express = require("express");
+const { generateJWT } = require("./jwt");
+const jwtRequired = require("./authMiddleware");
+
+const app = express();
+const PORT = 3000;
+const secretKey = "your-secret-key"; // should be in process.env
+
+// Example login route (mock)
+app.get("/login", (req, res) => {
+  const token = generateJWT(123, "admin", secretKey);
+  res.json({ token });
+});
+
+// Protected route
+app.get("/api/protected", jwtRequired, (req, res) => {
+  res.json({
+    user_id: req.user.sub,
+    role: req.user.role,
+    permissions: req.user.permissions,
+    message: "This is a protected endpoint",
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+```
+
+---
+
+### 🔑 Usage
+
+1. Start server:
+
+   ```bash
+   node server.js
+   ```
+2. Get a token:
+
+   ```
+   GET http://localhost:3000/login
+   ```
+3. Call protected endpoint with header:
+
+   ```
+   Authorization: Bearer <token>
+   ```
+
+---
 
 ## Best Practices & Security Considerations
 
