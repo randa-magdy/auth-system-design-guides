@@ -84,6 +84,22 @@ Imagine you want to play a game that requires access to your Google account:
 - **Enforces authorization policies** based on token scope
 - Examples: Google Calendar API, Facebook Graph API
 
+```mermaid
+sequenceDiagram
+    participant RO as 👤 Resource Owner (User)
+    participant CA as 📱 Client Application
+    participant AS as 🛡️ Authorization Server
+    participant RS as 🗄️ Resource Server
+
+    RO->>CA: 1. Requests access
+    CA->>AS: 2. Redirect for authorization
+    AS->>RO: 3. User authenticates
+    RO->>AS: 4. Grants permission
+    AS->>CA: 5. Issues access token
+    CA->>RS: 6. Uses token to access
+    RS->>CA: 7. Returns protected data
+```
+
 ## Access Tokens Deep Dive
 
 ### What is an Access Token?
