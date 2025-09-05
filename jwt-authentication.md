@@ -8,7 +8,7 @@
 5. [JWT Claims Explained](#jwt-claims-explained)
 6. [JWT Signature & Security](#jwt-signature--security)
 7. [JWTs in Distributed Systems](#jwts-in-distributed-systems)
-8. [Implementation Example (Node.js)](#implementation-example)
+8. [Implementation Example (Node.js)](#implementation-example-nodejs)
 9. [Best Practices & Security Considerations](#best-practices--security-considerations)
 10. [Common Use Cases](#common-use-cases)
 
