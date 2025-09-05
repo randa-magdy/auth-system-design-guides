@@ -1,0 +1,25 @@
+graph TB
+    subgraph "JWT Authentication Flow"
+        U[User]:::user --> L[Login Request<br/>username/password]:::user
+        L --> AS[Auth Server]:::server
+        AS --> V{Valid Credentials?}:::decision
+        V -->|No| E1[Return Error]:::error
+        V -->|Yes| C[Create JWT<br/>with user claims]:::server
+        C --> SIGN[Sign JWT with<br/>Secret Key]:::jwt
+        SIGN --> RT[Return JWT to Client]:::server
+        RT --> STORE[Client Stores JWT<br/>localStorage/cookie]:::user
+        STORE --> API1[API Request with<br/>Authorization: Bearer JWT]:::user
+        API1 --> VER[API Server Verifies<br/>JWT Signature]:::security
+        VER --> CHECK{Valid Signature<br/>& Not Expired?}:::decision
+        CHECK -->|No| E2[Return 401 Unauthorized]:::error
+        CHECK -->|Yes| EXTRACT[Extract User Info<br/>from JWT Claims]:::server
+        EXTRACT --> PROCESS[Process Request<br/>Based on User Permissions]:::server
+        PROCESS --> RESP[Return API Response]:::server
+    end
+
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px

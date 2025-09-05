@@ -1,0 +1,26 @@
+graph TB
+    subgraph "Microservices JWT Flow"
+        CLIENT[Client App]:::user --> GW[API Gateway]:::server
+        GW --> JWT_CHECK{Valid JWT?}:::decision
+        JWT_CHECK -->|No| REJECT[Reject Request]:::error
+        JWT_CHECK -->|Yes| ROUTE[Route to Services]:::server
+        
+        ROUTE --> MS1[User Service]:::server
+        ROUTE --> MS2[Order Service]:::server 
+        ROUTE --> MS3[Payment Service]:::server
+        
+        MS1 --> VERIFY1[Verify JWT<br/>with Public Key]:::security
+        MS2 --> VERIFY2[Verify JWT<br/>with Public Key]:::security
+        MS3 --> VERIFY3[Verify JWT<br/>with Public Key]:::security
+        
+        VERIFY1 --> PROCESS1[Process User Request]:::server
+        VERIFY2 --> PROCESS2[Process Order Request]:::server
+        VERIFY3 --> PROCESS3[Process Payment Request]:::server
+    end
+
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px

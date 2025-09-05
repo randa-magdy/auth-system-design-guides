@@ -1,0 +1,25 @@
+graph TB
+    subgraph "Public/Private Key JWT (RS256)"
+        AUTH_SRV[Authentication Server]:::server --> PRIV_KEY[Private Key]:::security
+        PRIV_KEY --> SIGN_JWT[Sign JWT with<br/>Private Key]:::jwt
+        SIGN_JWT --> SEND_JWT[Send JWT to Client]:::jwt
+        
+        CLIENT_REQ[Client Request<br/>with JWT]:::user --> API_SRV[API Server]:::server
+        API_SRV --> PUB_KEY[Public Key]:::security
+        PUB_KEY --> VERIFY_SIG[Verify JWT Signature<br/>with Public Key]:::security
+        VERIFY_SIG --> VALID{Valid?}:::decision
+        VALID -->|Yes| GRANT[Grant Access]:::server
+        VALID -->|No| DENY[Deny Access]:::error
+        
+        note1[🔒 Private Key stays<br/>on Auth Server only]:::security
+        note2[🔑 Public Key can be<br/>shared with all services]:::security
+    end
+
+
+
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px

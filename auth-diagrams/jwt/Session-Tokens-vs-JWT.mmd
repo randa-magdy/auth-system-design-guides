@@ -1,0 +1,29 @@
+graph TB
+    subgraph "Session Tokens vs JWT Comparison"
+        ST1[User Login]:::user --> ST2[Server Creates Session]:::server
+        ST2 --> ST3[Session ID Stored in Database]:::server
+        ST3 --> ST4[Session ID Sent to Client]:::server
+        ST4 --> ST5[Client Stores Session ID]:::user
+        ST5 --> ST6[Future Requests Include Session ID]:::user
+        ST6 --> ST7[Server Looks Up Session in Database]:::server
+        ST7 --> ST8{Valid Session?}:::decision
+        ST8 -->|Yes| ST9[Grant Access]:::server
+        ST8 -->|No| ST10[Deny Access]:::error
+        
+        JT1[User Login]:::user --> JT2[Server Creates JWT]:::server
+        JT2 --> JT3[JWT Signed with Secret]:::jwt
+        JT3 --> JT4[JWT Sent to Client]:::server
+        JT4 --> JT5[Client Stores JWT]:::user
+        JT5 --> JT6[Future Requests Include JWT]:::user
+        JT6 --> JT7[Server Verifies JWT Signature]:::security
+        JT7 --> JT8{Valid JWT?}:::decision
+        JT8 -->|Yes| JT9[Extract User Info & Grant Access]:::server
+        JT8 -->|No| JT10[Deny Access]:::error
+    end
+
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px

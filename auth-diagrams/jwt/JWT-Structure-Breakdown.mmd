@@ -1,0 +1,20 @@
+graph TB
+    subgraph "JWT Structure Breakdown"
+        JWT[JWT Token]:::jwt --> H[Header]
+        JWT --> P[Payload]  
+        JWT --> S[Signature]
+        
+        H --> H1["{ alg: 'HS256', typ: 'JWT' }"]
+        P --> P1["{ sub: '123', name: 'John', role: 'admin', exp: 1609459200 }"]
+        S --> S1["HMACSHA256( base64(header) + '.' + base64(payload), secret )"]
+        
+        H1 --> H2[Base64URL Encoded]
+        P1 --> P2[Base64URL Encoded] 
+        S1 --> S2[Base64URL Encoded]
+        
+        H2 --> FINAL[eyJhbGci...XVCIn0]
+        P2 --> FINAL
+        S2 --> FINAL
+    end
+
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px

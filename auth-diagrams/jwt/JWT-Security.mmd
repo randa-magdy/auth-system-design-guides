@@ -1,0 +1,23 @@
+graph TB
+    subgraph "JWT Security: Tampering Prevention"
+        ORIGINAL[Original JWT]:::jwt --> DECODE[Decode JWT]:::security
+        DECODE --> SHOW_CLAIMS["Claims: { role: 'user' }"]:::server
+        
+        TAMPER[Attacker Tries to<br/>Modify Claims] --> MODIFY["Modified: { role: 'admin' }"]
+        MODIFY --> ENCODE_NEW[Re-encode JWT]
+        ENCODE_NEW --> SEND[Send Modified JWT]
+        
+        SEND --> SERVER_VERIFY[Server Verifies Signature]:::security
+        SERVER_VERIFY --> CALC_SIG[Calculate Expected Signature<br/>using Original Secret]:::security
+        CALC_SIG --> COMPARE{Signatures Match?}:::decision
+        COMPARE -->|No| REJECT_TAMPER[❌ Reject - Token Tampered]:::error
+        COMPARE -->|Yes| ACCEPT[✅ Accept Token]:::server
+    end
+
+
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef jwt fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef security fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px
