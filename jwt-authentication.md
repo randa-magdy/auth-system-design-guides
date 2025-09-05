@@ -273,8 +273,6 @@ function verifyJWT(token, secretKey) {
 module.exports = { generateJWT, verifyJWT };
 ```
 
----
-
 ### `authMiddleware.js` – Express middleware for protecting routes
 
 ```javascript
@@ -355,8 +353,7 @@ app.listen(PORT, () => {
    ```
    Authorization: Bearer <token>
    ```
-
----
+   
 
 ## Best Practices & Security Considerations
 
