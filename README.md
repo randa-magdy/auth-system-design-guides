@@ -50,6 +50,8 @@ By identifying specific users or clients, you can implement rate limiting to pre
 
 ### 1. HTTP Basic Authentication
 
+![HTTP Basic Authentication](./auth-diagrams/Basic-Authentication-Flow.png)
+
 **How it works:** The client sends a username and password encoded in Base64 within the HTTP header with every request.
 
 **Pros:**
