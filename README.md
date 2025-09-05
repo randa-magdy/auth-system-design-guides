@@ -152,6 +152,8 @@ Understanding the distinction between these concepts is crucial:
 | **When It Happens** | First step in security process | After authentication |
 | **Example** | Login with username/password | Admin can edit users, regular user can only view profile |
 
+![Authentication vs Authorization](./auth-diagrams/Authentication-vs-Authorization-Decision-Tree.png)
+
 ### Real-World Example
 When you log into a banking website:
 1. **Authentication:** You prove you're the account holder by entering your username and password
