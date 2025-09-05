@@ -157,6 +157,24 @@ OAuth 2.0 provides four different grant types to handle various scenarios:
 5. App exchanges authorization code for **access token** (server-to-server)
 6. App uses access token to call APIs
 
+```mermaid
+sequenceDiagram
+    participant U1 as 👤 User
+    participant APP1 as 📱 Web Application
+    participant GOOG1 as 🛡️ Google OAuth Server
+    participant GAPI1 as 🗄️ Google APIs
+
+    U1->>APP1: 1. Click 'Login with Google'
+    APP1->>GOOG1: 2. Redirect with client_id, scope, redirect_uri
+    GOOG1->>U1: 3. Show login page
+    U1->>GOOG1: 4. Enter credentials & consent
+    GOOG1->>APP1: 5. Redirect with authorization code
+    APP1->>GOOG1: 6. Exchange code + secret for token
+    GOOG1->>APP1: 7. Return access + refresh token
+    APP1->>GAPI1: 8. Use access token
+    GAPI1->>APP1: 9. Return requested data
+```
+
 **Security Benefits:**
 - Access token never exposed to browser
 - Authorization code is single-use and short-lived
