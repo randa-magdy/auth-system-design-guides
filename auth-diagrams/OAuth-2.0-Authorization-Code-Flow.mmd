@@ -1,0 +1,27 @@
+graph TB
+    subgraph "OAuth 2.0 Authorization Code Flow"
+        D1[Client App] --> D2[Redirect user to OAuth provider]
+        D2 --> D3[OAuth Provider<br/>Google/Facebook/etc]
+        D3 --> D4[User enters credentials]
+        D4 --> D5{User authorizes?}
+        D5 -->|Yes| D6[Return authorization code]
+        D6 --> D7[Client exchanges code for tokens]
+        D7 --> D8[OAuth Provider returns<br/>Access & Refresh tokens]
+        D8 --> D9[Client uses access token<br/>to call API]
+        D9 --> D10[API Server validates token]
+        D10 --> D11{Valid token?}
+        D11 -->|Yes| D12[Return requested data]
+        D11 -->|No| D13[Return 401 Unauthorized]
+        D5 -->|No| D14[Return error]
+    end
+
+    class D10 authFlow
+    class D5,D11 decision
+    class D12 success
+    class D13,D14 error
+
+
+    classDef authFlow fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px

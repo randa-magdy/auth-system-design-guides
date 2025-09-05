@@ -1,0 +1,19 @@
+graph TB
+    subgraph "Authentication vs Authorization Decision Tree"
+        E1[Incoming API Request] --> E2{User authenticated?}
+        E2 -->|No| E3[Return 401 Unauthorized]
+        E2 -->|Yes| E4[Authentication Complete]
+        E4 --> E5{User authorized for this resource?}
+        E5 -->|No| E6[Return 403 Forbidden]
+        E5 -->|Yes| E7[Authorization Complete]
+        E7 --> E8[Process request & return data]
+    end
+
+    class E2,E5 decision
+    class E8 success
+    class E3,E6 error
+
+    classDef authFlow fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px

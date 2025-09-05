@@ -1,0 +1,25 @@
+graph TB
+    subgraph "JWT Authentication Flow"
+        C1[Client] --> C2[Login with credentials]
+        C2 --> C3[API Server]
+        C3 --> C4{Valid credentials?}
+        C4 -->|Yes| C5[Generate & sign JWT token]
+        C5 --> C6[Return JWT to client]
+        C6 --> C7[Client stores JWT]
+        C7 --> C8[Include JWT in future requests]
+        C8 --> C9[API Server verifies JWT signature]
+        C9 --> C10{Valid JWT?}
+        C10 -->|Yes| C11[Extract user info from token]
+        C11 --> C12[Return requested data]
+        C10 -->|No| C13[Return 401 Unauthorized]
+    end
+
+    classDef authFlow fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+
+    class C3,C9 authFlow
+    class C4,C10 decision
+    class C12 success
+    class C13 error

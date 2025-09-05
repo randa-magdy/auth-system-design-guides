@@ -1,0 +1,19 @@
+graph TB
+    subgraph "API Key Authentication Flow"
+        B1[Client] --> B2[Include API Key in request]
+        B2 --> B3[API Server receives request]
+        B3 --> B4{Valid API Key?}
+        B4 -->|Yes| B5[Check rate limits & permissions]
+        B5 --> B6[Return requested data]
+        B4 -->|No| B7[Return 401 Unauthorized]
+    end
+
+    classDef authFlow fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+
+    class B3 authFlow
+    class B4 decision
+    class B6 success
+    class B7 error

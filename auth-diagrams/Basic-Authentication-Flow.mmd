@@ -1,0 +1,19 @@
+graph TB
+    subgraph "Basic Authentication Flow"
+        A1[Client] --> A2[Encode username:password in Base64]
+        A2 --> A3[Send request with Authorization header]
+        A3 --> A4[API Server]
+        A4 --> A5{Valid credentials?}
+        A5 -->|Yes| A6[Return requested data]
+        A5 -->|No| A7[Return 401 Unauthorized]
+    end
+
+    classDef authFlow fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#f44336,stroke-width:2px
+
+    class A4 authFlow
+    class A5 decision
+    class A6 success
+    class A7 error
