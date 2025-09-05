@@ -73,6 +73,8 @@ Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
 
 ### 2. API Key Authentication
 
+![API Key Authentication](./auth-diagrams/API-Key-Authentication-Flow.png)
+
 **How it works:** The client includes a unique key (issued by the API provider) in each request, typically in the header, query string, or cookie.
 
 **Pros:**
@@ -94,6 +96,8 @@ X-API-Key: your-api-key-here
 ```
 
 ### 3. JWT (JSON Web Token) Authentication
+
+![JWT Authentication](./auth-diagrams/JWT-Authentication-Flow.png)
 
 **How it works:** After initial login, the server creates a digitally signed, encrypted token containing user identity information. The client includes this token in subsequent requests.
 
@@ -117,6 +121,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 ### 4. OAuth 2.0 Authentication
+
+![OAuth 2.0 Authentication](./auth-diagrams/OAuth-2.0-Authorization-Code-Flow.png)
 
 **How it works:** Users authenticate through trusted third-party services (Google, Facebook, GitHub) without sharing credentials with your API. The system uses access tokens that can expire and be revoked.
 
