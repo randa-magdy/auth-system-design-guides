@@ -20,6 +20,8 @@ JSON Web Token (JWT) is an **open standard (RFC 7519)** that defines a compact a
 
 ## Understanding Session Tokens vs JWTs
 
+![Session Tokens vs JWTs](./auth-diagrams/jwt/Session-Tokens-vs-JWT.png)
+
 ### Traditional Session Tokens
 
 **How Session Tokens Work:**
@@ -66,6 +68,8 @@ Frontend applications use JWTs to authorize API requests, allowing servers to qu
 5. API verifies JWT signature and extracts user information
 6. API processes request based on user permissions
 
+![JWT Flow](./auth-diagrams/jwt/JWT-Authentication-Flow.png)
+
 ## JWT Structure Deep Dive
 
 A JWT consists of three parts separated by dots (`.`):
@@ -109,6 +113,9 @@ HMACSHA256(
   secret
 )
 ```
+
+![JWT Structure Breakdown](./auth-diagrams/jwt/JWT-Structure-Breakdown.png)
+
 
 ## JWT Claims Explained
 
@@ -173,6 +180,8 @@ The signature is like a tamper-evident seal. It proves:
 3. **Tamper Detection:**
    If someone changes the payload (e.g., role from "user" to "admin"), the signature won't match, and verification will fail.
 
+![JWT Security](./auth-diagrams/jwt/JWT-Security.png)   
+
 ### **Public/Private Key Signing (RS256)**
 
 For distributed systems, asymmetric keys provide enhanced security:
@@ -188,6 +197,8 @@ const jwt = sign(payload, privateKey, { algorithm: 'RS256' });
 // API Server (verifies with public key)
 const decoded = verify(jwt, publicKey, { algorithms: ['RS256'] });
 ```
+
+![Public/Private Key](./auth-diagrams/jwt/Public-Private-Key-JWT.png)
 
 ## JWTs in Distributed Systems
 
@@ -206,6 +217,8 @@ User → Service A (verify JWT locally)
 User → Service B (verify JWT locally)
 User → Service C (verify JWT locally)
 ```
+
+![Microservices JWT Flow](./auth-diagrams/jwt/Microservices-JWT-Flow.png)
 
 ### Advantages in Distributed Systems:
 
