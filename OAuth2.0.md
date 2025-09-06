@@ -85,7 +85,7 @@ Imagine you want to play a game that requires access to your Google account:
 - Examples: Google Calendar API, Facebook Graph API
 
 ```mermaid
-sequenceDiagram
+  sequenceDiagram
     participant RO as 👤 Resource Owner (User)
     participant CA as 📱 Client Application
     participant AS as 🛡️ Authorization Server
@@ -125,7 +125,8 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### Token Lifecycle
 
-```mermaidgraph TB
+```mermaid
+graph TB
     subgraph "Token Lifecycle Management"
         LOGIN[🔑 User Login] --> ISSUE[📤 Issue Access Token &#40;short-lived&#41;]
         ISSUE --> STORE[💾 Store Tokens Securely]
@@ -184,7 +185,7 @@ OAuth 2.0 provides four different grant types to handle various scenarios:
 6. App uses access token to call APIs
 
 ```mermaid
-sequenceDiagram
+  sequenceDiagram
     participant U1 as 👤 User
     participant APP1 as 📱 Web Application
     participant GOOG1 as 🛡️ Google OAuth Server
@@ -220,8 +221,8 @@ sequenceDiagram
 3. Authorization server issues access token
 4. Application uses token to access its resources
 
-```mermaidchart
-sequenceDiagram
+```mermaid
+  sequenceDiagram
     participant SERV1 as 🔧 Application Server
     participant AUTH1 as 🛡️ Authorization Server
     participant API1 as 🗄️ Protected APIs
