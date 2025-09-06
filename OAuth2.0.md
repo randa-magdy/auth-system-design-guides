@@ -125,16 +125,42 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### Token Lifecycle
 
-```mermaid
-graph LR
-    A[Token Issued] --> B[Token Active]
-    B --> C{Token Expired?}
-    C -->|No| D[Continue Using]
-    C -->|Yes| E[Refresh Token]
-    E --> F[New Access Token]
-    F --> B
-    B --> G{User Revokes?}
-    G -->|Yes| H[Token Invalid]
+```mermaidgraph TB
+    subgraph "Token Lifecycle Management"
+        LOGIN[🔑 User Login] --> ISSUE[📤 Issue Access Token &#40;short-lived&#41;]
+        ISSUE --> STORE[💾 Store Tokens Securely]
+        STORE --> USE[🔄 Use Access Token for API Calls]
+        
+        USE --> EXPIRED{🕐 Token Expired?}
+        EXPIRED -->|No| CONTINUE[✅ Continue Using]
+        EXPIRED -->|Yes| REFRESH[🔄 Refresh Token → New Access Token]
+        
+        REFRESH --> NEW_TOKEN[📤 New Access Token]
+        NEW_TOKEN --> USE
+        
+        STORE --> REVOKED{🚫 User Revokes Access?}
+        REVOKED -->|Yes| INVALID[❌ All Tokens Invalid]
+        REVOKED -->|No| USE
+        
+        CONTINUE --> USE
+    end
+
+    class LOGIN user
+    class ISSUE,NEW_TOKEN token
+    class STORE app
+    class USE,CONTINUE resource
+    class EXPIRED,REVOKED decision
+    class INVALID security
+    class REFRESH token
+
+    %% Styles
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef app fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px  
+    classDef auth fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef resource fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef token fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    classDef security fill:#ffebee,stroke:#f44336,stroke-width:2px
+    classDef decision fill:#fff9c4,stroke:#f57f17,stroke-width:2px
 ```
 
 ## OAuth 2.0 Grant Types (Flows)
@@ -193,6 +219,18 @@ sequenceDiagram
 2. Authorization server validates client credentials
 3. Authorization server issues access token
 4. Application uses token to access its resources
+
+```mermaidchart
+sequenceDiagram
+    participant SERV1 as 🔧 Application Server
+    participant AUTH1 as 🛡️ Authorization Server
+    participant API1 as 🗄️ Protected APIs
+
+    SERV1->>AUTH1: 1. Authenticate with client_id + secret
+    AUTH1->>SERV1: 2. Validate client credentials & issue token
+    SERV1->>API1: 3. Use token for API calls
+    API1->>SERV1: 4. Return data
+```
 
 **Example Use Cases:**
 - Microservices communication
@@ -258,6 +296,22 @@ Instead of opaque tokens, many implementations use JWT as access tokens:
 }
 ```
 
+```mermaid
+sequenceDiagram
+    participant CLIENT as 📱 Client App
+    participant OAUTH as 🛡️ OAuth Server
+    participant API_SRV as 🗄️ API Server
+
+    CLIENT->>OAUTH: 1. OAuth 2.0 flow
+    OAUTH->>CLIENT: 2. Issues JWT access token  
+    note right of CLIENT: Payload: { 'sub': 'user123', 'scope': 'read:calendar', 'exp': 1609459200 }
+    
+    CLIENT->>API_SRV: 3. Include JWT in requests
+    API_SRV->>API_SRV: 4. Verify JWT signature locally
+    API_SRV->>API_SRV: 5. Extract user info from JWT
+    API_SRV->>CLIENT: 6. Return protected resources
+```
+
 ### Benefits of JWT Access Tokens
 
 1. **Self-Contained**: All necessary information embedded in token
@@ -283,6 +337,35 @@ fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
 ```
 
 ## Identity Provider vs Authorization Server
+
+```mermaid
+graph TB
+    subgraph "Identity Provider vs Authorization Server"
+        subgraph "Same Entity #40;Google#41;"
+            G_USER[👤 User] --> G_IDP[🔐 Google Identity Provider]
+            G_IDP --> G_AUTH[🛡️ Google Authorization Server]
+            G_AUTH --> G_TOKEN[🎫 Access Token]
+        end
+        
+        subgraph "Separate Entities #40;Enterprise#41;"
+            E_USER[👤 Employee] --> E_IDP[🏢 Active Directory]
+            E_IDP --> E_AUTH[🛡️ Company OAuth Server]
+            E_AUTH --> E_TOKEN[🎫 Company Access Token]
+        end
+        
+        G_BENEFIT[💡 Google: One provider handles both]
+        E_BENEFIT[💡 Enterprise: More control & policies]
+    end
+
+    class G_USER,E_USER user
+    class G_IDP,E_IDP,G_AUTH,E_AUTH auth
+    class G_TOKEN,E_TOKEN token
+
+    %% Styles
+    classDef user fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef auth fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
+    classDef token fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+```
 
 ### Understanding the Roles
 
@@ -317,6 +400,38 @@ User → Active Directory (authenticates) → Company OAuth Server (issues token
 - Enhanced security controls
 
 ## Real-World Implementation
+
+```mermaid
+sequenceDiagram
+    participant WebApp as 🌐 Web Application
+    participant Provider as 🔐 OAuth Provider
+    participant User as 👤 User
+    participant API as 📞 API Server
+
+    WebApp->>Provider: 1. Redirect with state
+    Provider->>User: 2. User authenticates
+    User->>Provider: Approves
+    Provider->>WebApp: 3. Callback with code + state
+
+    alt State mismatch
+        WebApp-->>WebApp: 🚨 CSRF Attack - Reject Request
+    else State matches
+        WebApp->>Provider: 4. Exchange code for token
+        Provider-->>WebApp: Access & Refresh Tokens
+        WebApp->>WebApp: 💾 Store tokens securely
+        WebApp->>API: 📞 API call with Bearer token
+        
+        alt Token invalid
+            API-->>WebApp: ❌ Unauthorized
+            WebApp->>Provider: 🔄 Use refresh token
+            Provider-->>WebApp: 🎫 New Access Token
+            WebApp->>API: Retry API call
+            API-->>WebApp: ✅ Return data
+        else Token valid
+            API-->>WebApp: ✅ Return data
+        end
+    end
+```
 
 ### Complete Authorization Code Flow Example
 
